@@ -171,13 +171,13 @@ private class RadarPointView: UIButton {
     
     // MARK: - Actions
     
-    private func didTapPoint(sender: RadarPointView) {
+    internal func didTapPoint(sender: AnyObject) {
         if delegate == nil {
             return;
         }
-        let index = visiblePoints.indexOf(sender)
+        let index = visiblePoints.indexOf(sender as! RadarPointView)
         if index != nil {
-            delegate.didSelectObjectAtIndex!(self, index: index!)
+            delegate.didSelectObjectAtIndex?(self, index: index!)
         }
     }
 }
