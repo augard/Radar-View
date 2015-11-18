@@ -112,10 +112,11 @@ private class RadarPointView: UIButton {
             setNeedsLayout()
         }
     }
-    private var maxPointsOnLine: Int!
+    private var maxPointsOnLine: Int = 0
     
-    private var numberOfSegments: Int!
+    private var numberOfSegments: Int = 0
     private var segments: [Int: CLLocationDistance] = [:]
+    private var segmentsLabel: [UILabel] = []
 
     private var points: [Int: [Int: RadarObjectProtocol]] = [:]
     private var numberOfPoints: Int = 0
@@ -151,9 +152,6 @@ private class RadarPointView: UIButton {
     
     private func initView() {
         backgroundColor = UIColor.grayColor()
-        
-        maxPointsOnLine = calcNumberOfPoints()
-        numberOfSegments = calcNumberOfSegments()
     }
     
     override func layoutSubviews() {
@@ -170,6 +168,23 @@ private class RadarPointView: UIButton {
         }
         
         if numberOfSegments != segments {
+            if numberOfSegments > segments {
+                while segmentsLabel.count != segments {
+                    segmentsLabel.last?.removeFromSuperview()
+                    segmentsLabel.removeLast()
+                }
+            } else if (numberOfSegments < segments) {
+                while segmentsLabel.count != segments {
+                    let label: UILabel = UILabel(frame: CGRect(x: 0.0, y: 0.0, width: 50.0, height: 20.0))
+                    label.textAlignment = .Center
+                    label.textColor = UIColor.whiteColor()
+                    label.font = UIFont(name: "Avenir-Heavy", size: 10)
+                    label.numberOfLines = 2
+                    label.backgroundColor = UIColor.purpleColor()
+                    addSubview(label)
+                    segmentsLabel.append(label)
+                }
+            }
             numberOfSegments = segments
             needReload = true
         }
@@ -195,7 +210,7 @@ private class RadarPointView: UIButton {
         if oldLimit > limit {
             recycledPoints.removeAll()
             let removeLimit = oldLimit - limit
-            for var i = 0; i < removeLimit; i++ {
+            for _ in 0..<removeLimit {
                 if recycledPoints.count < 5 {
                     recyclePointView(visiblePoints.last!)
                 } else {
@@ -205,7 +220,7 @@ private class RadarPointView: UIButton {
             }
         } else {
             let insertLimit = limit - oldLimit
-            for var i = 0; i < insertLimit; i++ {
+            for _ in 0..<insertLimit {
                 visiblePoints.append(dequeueRecycledPointView())
             }
         }
@@ -213,7 +228,7 @@ private class RadarPointView: UIButton {
     
     func reloadData() {
         NSLog("reloadData")
-        if dataSource == nil {
+        if dataSource == nil || numberOfSegments == 0 {
             self.cleanUp()
             return;
         }
@@ -231,7 +246,7 @@ private class RadarPointView: UIButton {
         var minDistance: CLLocationDistance = CLLocationDistanceMax
         var maxDistance: CLLocationDistance = 0
         
-        for var i = 0; i < numberOfPoints; i++ {
+        for i in 0..<numberOfPoints {
             let object = dataSource.objectForIndex(self, index: i);
             let distance: CLLocationDistance = object.distance()
             if distance < minDistance {
@@ -283,6 +298,7 @@ private class RadarPointView: UIButton {
             let maxCount: CGFloat = CGFloat(objects.count > maxPointsOnLine ? maxPointsOnLine : objects.count)
             let evenCount: Bool = maxCount % 2 == 0
             let marginX: CGFloat = floor((frame.width - (pointSize * maxCount)) / (maxCount + 1))
+            let originY: CGFloat = (marginY + pointHeight) * CGFloat(numberOfSegments - segmentIndex - 1)
             //let displayGroupView = objects.count > maxPointsOnLine
             
             let sortedKeysAndValues = objects.sort { $0.0 < $1.0 }
@@ -295,17 +311,17 @@ private class RadarPointView: UIButton {
                 if view.group {
                     view.setTitle("+\(objects.count - maxPointsOnLine)", forState: .Normal)
                 }
-                var originY: CGFloat = 0
+                var correctionY: CGFloat = 0
                 if evenCount {
                     if line == 0 || line == maxCount - 1 {
-                        originY = curveCorrection
+                        correctionY = curveCorrection
                     }
                 } else if !evenCount && maxCount > 1 {
                     if line == 0 || line == maxCount - 1 {
-                        originY = curveCorrection
+                        correctionY = curveCorrection
                     }
                 }
-                view.frame = CGRectMake(marginX + ((marginX + pointSize) * line), originY + marginY + ((marginY + pointHeight) * CGFloat(numberOfSegments - segmentIndex - 1)), pointSize, pointHeight)
+                view.frame = CGRectMake(marginX + ((marginX + pointSize) * line), marginY + originY + correctionY, pointSize, pointHeight)
                 addSubview(view)
                 
                 line++
@@ -318,6 +334,14 @@ private class RadarPointView: UIButton {
         }
         NSLog("viewLimit \(viewLimit) vs viewIndex \(viewIndex)")
         NSLog("points \(numberOfPoints) vs verify \(numberVerify), distance objects \(distanceObjects.count) == 0")
+        
+        for segmentIndex in 0..<numberOfSegments {
+            let originY: CGFloat = (marginY + pointHeight) * CGFloat(numberOfSegments - segmentIndex - 1)
+            let label = segmentsLabel[segmentIndex]
+            label.text = segmentLabelTitle(CLLocationDistance(segmentIndex * avargeDistance), segmentIndex: segmentIndex)
+            label.frame = CGRectMake((frame.width - label.frame.width) / 2, marginY + originY + ((pointHeight - label.frame.height) / 2),
+            label.frame.width, label.frame.height)
+        }
     }
     
     private func dequeueRecycledPointView() -> RadarPointView {
@@ -363,6 +387,21 @@ private class RadarPointView: UIButton {
         } else {
             delegate.didSelectObjectAtIndex?(self, index: view.index)
         }
+    }
+    
+    // MARK: -
+    
+    private func segmentLabelTitle(distance: CLLocationDistance, segmentIndex: Int) -> String {
+        let labelTitle: String!
+        let distance: Int = Int(distance / 1000)
+        if segmentIndex == 0 {
+            labelTitle = "Blízko"
+        } else if segmentIndex + 1 == numberOfSegments {
+            labelTitle = "\(distance) km\na dále"
+        } else {
+            labelTitle = "\(distance) km"
+        }
+        return labelTitle
     }
 }
 
