@@ -57,8 +57,8 @@
 				65D54D3B1BFC7F0E00526CC5 /* AppDelegate.swift */,
 				65D54D3D1BFC7F0E00526CC5 /* ViewController.swift */,
 				65D54D3F1BFC7F0E00526CC5 /* Main.storyboard */,
-				65D54D421BFC7F0E00526CC5 /* Assets.xcassets */,
 				65D54D441BFC7F0E00526CC5 /* LaunchScreen.storyboard */,
+				65D54D421BFC7F0E00526CC5 /* Assets.xcassets */,
 				65D54D471BFC7F0E00526CC5 /* Info.plist */,
 			);
 			path = MentosRadar;
