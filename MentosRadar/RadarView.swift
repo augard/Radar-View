@@ -35,7 +35,6 @@ private class RadarPointView: UIButton {
         titleLabel?.font = UIFont(name: "Avenir-Book", size: 14)
         titleLabel?.textAlignment = .Center
         titleLabel?.lineBreakMode = .ByTruncatingTail
-        setTitleColor(UIColor.blackColor(), forState: .Normal)
         
         imageView?.layer.masksToBounds = true
         imageView?.contentMode = .ScaleAspectFill
@@ -44,8 +43,10 @@ private class RadarPointView: UIButton {
     var object: RadarObjectProtocol! {
         didSet {
             let distance = Int(object.distance())
+            let color = object.titleColor()
             //setTitle(object.title(), forState: .Normal)
             setTitle("\(distance)", forState: .Normal)
+            setTitleColor(color == nil ? UIColor.blackColor() : color, forState: .Normal)
             setImage(object.photo(), forState: .Normal)
             indicatorView.image = object.identifierIcon()
             indicatorView.hidden = indicatorView.image == nil
@@ -342,6 +343,13 @@ private class RadarPointView: UIButton {
      @return String title
      */
     func title() -> String
+    
+    /**
+     Title color for object in radar
+     
+     @return UIColor title
+     */
+    func titleColor() -> UIColor?
     
     /**
      UIImage for object in radar

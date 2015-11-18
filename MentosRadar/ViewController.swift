@@ -37,6 +37,10 @@ import CoreLocation
         return vTitle
     }
     
+    func titleColor() -> UIColor? {
+        return nil
+    }
+    
     func photo() -> UIImage {
         return vPhoto
     }
