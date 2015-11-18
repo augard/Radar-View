@@ -80,18 +80,19 @@ private class RadarPointView: UIButton {
 
 // Name of the radar class
 @objc class RadarView : UIView {
-    private var numberOfSegments: Int = 3
+    var pointSize: CGFloat = 60.0 {
+        didSet {
+            setNeedsLayout()
+        }
+    }
+    private var maxPointsOnLine: Int!
+    
+    private var numberOfSegments: Int!
     private var segments: [CLLocationDistance: [RadarObjectProtocol]]!
 
     private var numberOfPoints: Int = 0
     private var visiblePoints: [RadarPointView] = []
     private var recycledPoints: Set<RadarPointView> = Set()
-    
-    var pointSize: CGFloat = 60.0 {
-        didSet {
-            reloadData()
-        }
-    }
     
     @IBOutlet weak var delegate: RadarDelegate!
     @IBOutlet weak var dataSource: RadarDataSource! {
@@ -114,9 +115,36 @@ private class RadarPointView: UIButton {
     
     private func initView() {
         backgroundColor = UIColor.grayColor()
+        
+        maxPointsOnLine = Int((frame.width - 20.0) / (pointSize + 25.0))
+        numberOfSegments = Int((frame.height - 20.0) / (pointSize + 50.0))
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        var needReload: Bool = false
+        let pointsOnLine = Int((frame.width - 20.0) / (pointSize + 25.0))
+        let segments = Int((frame.height - 20.0) / (pointSize + 50.0))
+        NSLog("Radar layout, max points on line \(pointsOnLine), max rows \(segments)")
+        
+        if maxPointsOnLine != pointsOnLine {
+            maxPointsOnLine = pointsOnLine
+            needReload = true
+        }
+        
+        if numberOfSegments != segments {
+            numberOfSegments = segments
+            needReload = true
+        }
+        
+        if needReload {
+            self.reloadData()
+        }
     }
     
     func reloadData() {
+        NSLog("reloadData")
         let limit = dataSource.numberOfObjects(self)
         
         if numberOfPoints > limit {
@@ -137,14 +165,23 @@ private class RadarPointView: UIButton {
             }
         }
         numberOfPoints = limit
-        let pointHeight = Int(pointSize) + 30
+        let pointHeight = pointSize + 30.0
+        let marginX = floor((frame.width - 20.0 - (pointSize * CGFloat(maxPointsOnLine))) / CGFloat(maxPointsOnLine - 1))
+        let marginY = floor((frame.height - 20.0 - (pointHeight * CGFloat(numberOfSegments))) / CGFloat(numberOfSegments - 1))
+        var line: CGFloat = 0, row: CGFloat = 0
         
         for var i = 0; i < limit; i++ {
             let object = dataSource.objectForIndex(self, index: i);
             let view = visiblePoints[i];
             view.object = object
-            view.frame = CGRectMake(10.0, CGFloat(10 + ((pointHeight + 10) * i)), pointSize, CGFloat(pointHeight))
+            view.frame = CGRectMake(10.0 + ((marginX + pointSize) * line), 10.0 + ((marginY + pointHeight) * row), pointSize, pointHeight)
             addSubview(view)
+            
+            line++
+            if Int(line) >= maxPointsOnLine {
+                line = 0
+                row++
+            }
         }
     }
     
