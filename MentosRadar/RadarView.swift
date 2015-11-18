@@ -42,6 +42,11 @@ private class RadarPointView: UIButton {
     
     var object: RadarObjectProtocol! {
         didSet {
+            if object == nil {
+                setImage(nil, forState: .Normal)
+                indicatorView.image = nil
+                return;
+            }
             let distance = Int(object.distance())
             let color = object.titleColor()
             //setTitle(object.title(), forState: .Normal)
@@ -158,17 +163,22 @@ private class RadarPointView: UIButton {
         }
     }
     
-    func reloadData() {
-        NSLog("reloadData")
-        if dataSource == nil {
-            return;
+    private func cleanUp() {
+        for visiblePoint in visiblePoints {
+            if recycledPoints.count < 5 {
+                recyclePointView(visiblePoint)
+            } else {
+                removePointView(visiblePoint)
+            }
         }
-        let limit = dataSource.numberOfObjects(self)
-        
+        visiblePoints.removeAll()
+    }
+    
+    private func cleanUpViews(oldLimit: Int, limit: Int) {
         // clean up views
-        if numberOfPoints > limit {
+        if oldLimit > limit {
             recycledPoints.removeAll()
-            let removeLimit = numberOfPoints - limit
+            let removeLimit = oldLimit - limit
             for var i = 0; i < removeLimit; i++ {
                 if recycledPoints.count < 5 {
                     recyclePointView(visiblePoints.last!)
@@ -178,26 +188,34 @@ private class RadarPointView: UIButton {
                 visiblePoints.removeLast()
             }
         } else {
-            let insertLimit = limit - numberOfPoints
+            let insertLimit = limit - oldLimit
             for var i = 0; i < insertLimit; i++ {
                 visiblePoints.append(dequeueRecycledPointView())
             }
         }
-        
-        numberOfPoints = limit
+    }
+    
+    func reloadData() {
+        NSLog("reloadData")
+        if dataSource == nil {
+            self.cleanUp()
+            return;
+        }
+        numberOfPoints = dataSource.numberOfObjects(self)
         segments.removeAll()
         points.removeAll()
         
-        if limit == 0 {
+        if numberOfPoints == 0 {
+            self.cleanUp()
             return;
         }
         
         // prepare objects positions
-        let sourceObjects: NSMutableArray = NSMutableArray(capacity: limit)
+        let sourceObjects: NSMutableArray = NSMutableArray(capacity: numberOfPoints)
         var minDistance: CLLocationDistance = CLLocationDistanceMax
         var maxDistance: CLLocationDistance = 0
         
-        for var i = 0; i < limit; i++ {
+        for var i = 0; i < numberOfPoints; i++ {
             let object = dataSource.objectForIndex(self, index: i);
             let distance: CLLocationDistance = object.distance()
             if distance < minDistance {
@@ -212,6 +230,7 @@ private class RadarPointView: UIButton {
         let avargeDistance: Int = Int(ceil(maxDistance / Double(numberOfSegments)))
         var lastDistance: CLLocationDistance = 0
         let distanceObjects: NSMutableArray = sourceObjects.mutableCopy() as! NSMutableArray
+        var viewLimit = 0
         while segments.count < numberOfSegments {
             let currentIndex = segments.count
             let currentDistance = CLLocationDistance(avargeDistance * (currentIndex + 1));
@@ -226,18 +245,22 @@ private class RadarPointView: UIButton {
                     }
                     points[currentIndex]![objectIndex] = object as? RadarObjectProtocol
                     distanceObjects.removeObject(object)
+                    if points[currentIndex]!.count <= maxPointsOnLine {
+                        viewLimit++;
+                    }
                 }
             }
             lastDistance = currentDistance
         }
+        self.cleanUpViews(self.visiblePoints.count, limit: viewLimit)
         NSLog("\(segments)")
-        NSLog("\(distanceObjects)")
         
         // add views to radar
         let pointHeight = pointSize + titleHeight
         let marginY = floor((frame.height - margin * 2 - (pointHeight * CGFloat(numberOfSegments))) / CGFloat(numberOfSegments - 1))
 
         var numberVerify = 0
+        var viewIndex = 0
         
         for (row, objects) in points {
             var line: CGFloat = 0
@@ -250,20 +273,22 @@ private class RadarPointView: UIButton {
             }
             //let displayGroupView = objects.count > maxPointsOnLine
             
-            for (index, object) in objects {
-                let view = visiblePoints[index];
+            for (_, object) in objects {
+                let view = visiblePoints[viewIndex];
                 let originX = maxCount == CGFloat(maxPointsOnLine) ? 0.0 : marginX
                 view.object = object
                 view.frame = CGRectMake(originX + margin + ((marginX + pointSize) * line), margin + ((marginY + pointHeight) * CGFloat(numberOfSegments - row - 1)), pointSize, pointHeight)
                 addSubview(view)
                 
                 line++
+                viewIndex++
                 if Int(line) >= maxPointsOnLine {
                     break;
                 }
             }
             numberVerify += objects.count
         }
+        NSLog("viewLimit \(viewLimit) vs viewIndex \(viewIndex)")
         NSLog("points \(numberOfPoints) vs verify \(numberVerify), distance objects \(distanceObjects.count) == 0")
     }
     
