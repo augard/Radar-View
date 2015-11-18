@@ -75,9 +75,13 @@ class ViewController: UIViewController, RadarDataSource, RadarDelegate {
     }
     
     private func initObjects() {
+        let indicator = UIImage(named: "indicator")
         let limit = Int.random(5, 20)
         for var i = 0; i < limit; i++ {
-            let object = ViewObject(title: nameGeneator.getName().componentsSeparatedByString(" ").first!, photo: UIImage(named: "default-ico")!, identifierIcon: nil, distance: Double.random(0, 2500))
+            let object = ViewObject(title: nameGeneator.getName().componentsSeparatedByString(" ").first!,
+                photo: UIImage(named: "default-ico")!,
+                identifierIcon: Int.random(0, 1) == 1 ? indicator : nil,
+                distance: Double.random(0, 2500))
             radarObjects.append(object)
         }
         NSLog("\(radarObjects)")

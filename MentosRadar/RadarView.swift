@@ -11,6 +11,8 @@ import CoreLocation
 
 
 private class RadarPointView: UIButton {
+    private var indicatorView: UIImageView!
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -24,23 +26,38 @@ private class RadarPointView: UIButton {
     }
     
     private func initView() {
+        indicatorView = UIImageView(frame: CGRectZero)
+        indicatorView.userInteractionEnabled = false
+        addSubview(indicatorView)
+        
         backgroundColor = UIColor.blueColor()
         
         titleLabel?.font = UIFont(name: "Avenir-Book", size: 14)
-        titleLabel?.textColor = UIColor.blackColor()
         titleLabel?.textAlignment = .Center
         titleLabel?.lineBreakMode = .ByTruncatingTail
+        setTitleColor(UIColor.blackColor(), forState: .Normal)
         
         imageView?.layer.masksToBounds = true
         imageView?.contentMode = .ScaleAspectFill
-        
-        setNeedsDisplay()
     }
     
     var object: RadarObjectProtocol! {
         didSet {
             setTitle(object.title(), forState: .Normal)
             setImage(object.photo(), forState: .Normal)
+            indicatorView.image = object.identifierIcon()
+            indicatorView.hidden = indicatorView.image == nil
+            
+            self.setNeedsLayout()
+        }
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        if indicatorView.image != nil {
+            let imageSize = indicatorView.image!.size
+            indicatorView.frame = CGRectMake(frame.width - imageSize.width - 2.0, 2.0, imageSize.width, imageSize.height)
         }
     }
     
