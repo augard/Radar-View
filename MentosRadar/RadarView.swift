@@ -51,7 +51,14 @@ private class RadarPointView: UIButton {
             let color = object.titleColor()
             //setTitle(object.title(), forState: .Normal)
             setTitle("\(distance)", forState: .Normal)
-            setTitleColor(color == nil ? UIColor.blackColor() : color, forState: .Normal)
+            
+            if group {
+                titleLabel?.font = UIFont(name: "Avenir-Medium", size: 19)
+                setTitleColor(UIColor.whiteColor(), forState: .Normal)
+            } else {
+                titleLabel?.font = UIFont(name: "Avenir-Book", size: 14)
+                setTitleColor(color == nil ? UIColor.blackColor() : color, forState: .Normal)
+            }
             setImage(object.photo(), forState: .Normal)
             indicatorView.image = object.identifierIcon()
             indicatorView.hidden = indicatorView.image == nil
@@ -59,6 +66,10 @@ private class RadarPointView: UIButton {
             self.setNeedsLayout()
         }
     }
+    
+    var segment: Int!
+    var index: Int!
+    var group: Bool = false
     
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -71,7 +82,11 @@ private class RadarPointView: UIButton {
     
     override private func titleRectForContentRect(contentRect: CGRect) -> CGRect {
         let width = contentRect.width
-        return CGRectMake(0.0, width, width, contentRect.height - width)
+        if group {
+            return CGRectMake(0.0, 0.0, width, width)
+        } else {
+            return CGRectMake(0.0, width, width, contentRect.height - width)
+        }
     }
     
     override private func imageRectForContentRect(contentRect: CGRect) -> CGRect {
@@ -268,9 +283,15 @@ private class RadarPointView: UIButton {
             let marginX: CGFloat = floor((frame.width - (pointSize * maxCount)) / (maxCount + 1))
             //let displayGroupView = objects.count > maxPointsOnLine
             
-            for (_, object) in objects {
+            for (objectIndex, object) in objects {
                 let view = visiblePoints[viewIndex];
+                view.group = (objects.count > (maxPointsOnLine + 1) && Int(line) + 1 == maxPointsOnLine)
                 view.object = object
+                if view.group {
+                    view.setTitle("+\(objects.count - maxPointsOnLine)", forState: .Normal)
+                }
+                view.index = objectIndex
+                view.segment = row
                 view.frame = CGRectMake(marginX + ((marginX + pointSize) * line), marginY + ((marginY + pointHeight) * CGFloat(numberOfSegments - row - 1)), pointSize, pointHeight)
                 addSubview(view)
                 
@@ -313,9 +334,21 @@ private class RadarPointView: UIButton {
         if delegate == nil {
             return;
         }
-        let index = visiblePoints.indexOf(sender as! RadarPointView)
-        if index != nil {
-            delegate.didSelectObjectAtIndex?(self, index: index!)
+        let view: RadarPointView = sender as! RadarPointView
+        if view.group {
+            let objects = points[view.segment]
+            if objects == nil {
+                return
+            }
+            var indexes: [Int] = []
+            for (objectIndex, _) in objects! {
+                if objectIndex >= view.index {
+                    indexes.append(objectIndex)
+                }
+            }
+            delegate.didSelectGroupWithIndexes?(self, indexes: indexes)
+        } else {
+            delegate.didSelectObjectAtIndex?(self, index: view.index)
         }
     }
 }
