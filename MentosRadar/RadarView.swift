@@ -105,6 +105,7 @@ private class RadarPointView: UIButton {
 @objc class RadarView : UIView {
     private let margin: CGFloat = 10.0
     private let titleHeight: CGFloat = 30.0
+    private let curveCorrection: CGFloat = 12.0
     
     var pointSize: CGFloat = 60.0 {
         didSet {
@@ -277,9 +278,10 @@ private class RadarPointView: UIButton {
         var numberVerify = 0
         var viewIndex = 0
         
-        for (row, objects) in points {
+        for (segmentIndex, objects) in points {
             var line: CGFloat = 0
             let maxCount: CGFloat = CGFloat(objects.count > maxPointsOnLine ? maxPointsOnLine : objects.count)
+            let evenCount: Bool = maxCount % 2 == 0
             let marginX: CGFloat = floor((frame.width - (pointSize * maxCount)) / (maxCount + 1))
             //let displayGroupView = objects.count > maxPointsOnLine
             
@@ -287,13 +289,23 @@ private class RadarPointView: UIButton {
             for (objectIndex, object) in sortedKeysAndValues {
                 let view = visiblePoints[viewIndex];
                 view.group = (objects.count > (maxPointsOnLine + 1) && Int(line) + 1 == maxPointsOnLine)
-                view.segment = row
+                view.segment = segmentIndex
                 view.index = objectIndex
                 view.object = object
                 if view.group {
                     view.setTitle("+\(objects.count - maxPointsOnLine)", forState: .Normal)
                 }
-                view.frame = CGRectMake(marginX + ((marginX + pointSize) * line), marginY + ((marginY + pointHeight) * CGFloat(numberOfSegments - row - 1)), pointSize, pointHeight)
+                var originY: CGFloat = 0
+                if evenCount {
+                    if line == 0 || line == maxCount - 1 {
+                        originY = curveCorrection
+                    }
+                } else if !evenCount && maxCount > 1 {
+                    if line == 0 || line == maxCount - 1 {
+                        originY = curveCorrection
+                    }
+                }
+                view.frame = CGRectMake(marginX + ((marginX + pointSize) * line), originY + marginY + ((marginY + pointHeight) * CGFloat(numberOfSegments - segmentIndex - 1)), pointSize, pointHeight)
                 addSubview(view)
                 
                 line++
