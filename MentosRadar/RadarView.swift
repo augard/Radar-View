@@ -235,19 +235,26 @@ private class RadarPointView: UIButton {
         
         // add views to radar
         let pointHeight = pointSize + titleHeight
-        let marginX = floor((frame.width - margin * 2 - (pointSize * CGFloat(maxPointsOnLine))) / CGFloat(maxPointsOnLine - 1))
         let marginY = floor((frame.height - margin * 2 - (pointHeight * CGFloat(numberOfSegments))) / CGFloat(numberOfSegments - 1))
 
         var numberVerify = 0
         
         for (row, objects) in points {
             var line: CGFloat = 0
+            let maxCount: CGFloat = CGFloat(objects.count > maxPointsOnLine ? maxPointsOnLine : objects.count)
+            var marginX: CGFloat = 0
+            if maxCount == CGFloat(maxPointsOnLine) {
+                marginX = floor((frame.width - margin * 2 - (pointSize * maxCount)) / (maxCount - 1))
+            } else {
+                marginX = floor((frame.width - margin * 2 - (pointSize * maxCount)) / (maxCount + 1))
+            }
             //let displayGroupView = objects.count > maxPointsOnLine
             
             for (index, object) in objects {
                 let view = visiblePoints[index];
+                let originX = maxCount == CGFloat(maxPointsOnLine) ? 0.0 : marginX
                 view.object = object
-                view.frame = CGRectMake(margin + ((marginX + pointSize) * line), margin + ((marginY + pointHeight) * CGFloat(numberOfSegments - row - 1)), pointSize, pointHeight)
+                view.frame = CGRectMake(originX + margin + ((marginX + pointSize) * line), margin + ((marginY + pointHeight) * CGFloat(numberOfSegments - row - 1)), pointSize, pointHeight)
                 addSubview(view)
                 
                 line++
