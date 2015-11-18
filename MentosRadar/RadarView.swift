@@ -50,7 +50,7 @@ private class RadarPointView: UIButton {
             let distance = Int(object.distance())
             let color = object.titleColor()
             //setTitle(object.title(), forState: .Normal)
-            setTitle("\(distance)", forState: .Normal)
+            setTitle("\(index) \(distance)", forState: .Normal)
             
             if group {
                 titleLabel?.font = UIFont(name: "Avenir-Medium", size: 19)
@@ -283,15 +283,16 @@ private class RadarPointView: UIButton {
             let marginX: CGFloat = floor((frame.width - (pointSize * maxCount)) / (maxCount + 1))
             //let displayGroupView = objects.count > maxPointsOnLine
             
-            for (objectIndex, object) in objects {
+            let sortedKeysAndValues = objects.sort { $0.0 < $1.0 }
+            for (objectIndex, object) in sortedKeysAndValues {
                 let view = visiblePoints[viewIndex];
                 view.group = (objects.count > (maxPointsOnLine + 1) && Int(line) + 1 == maxPointsOnLine)
+                view.segment = row
+                view.index = objectIndex
                 view.object = object
                 if view.group {
                     view.setTitle("+\(objects.count - maxPointsOnLine)", forState: .Normal)
                 }
-                view.index = objectIndex
-                view.segment = row
                 view.frame = CGRectMake(marginX + ((marginX + pointSize) * line), marginY + ((marginY + pointHeight) * CGFloat(numberOfSegments - row - 1)), pointSize, pointHeight)
                 addSubview(view)
                 
