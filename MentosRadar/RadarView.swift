@@ -105,6 +105,6 @@ import CoreLocation
      
      @return distance to object as CLLocationDistance
      */
-    var distance: CLLocationDistance { get }
+    func distance() -> CLLocationDistance
 }
 

@@ -13,6 +13,11 @@
 		65D54D431BFC7F0E00526CC5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 65D54D421BFC7F0E00526CC5 /* Assets.xcassets */; };
 		65D54D461BFC7F0E00526CC5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 65D54D441BFC7F0E00526CC5 /* LaunchScreen.storyboard */; };
 		65D54D4E1BFC7FE700526CC5 /* RadarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D54D4D1BFC7FE700526CC5 /* RadarView.swift */; };
+		65D54D501BFC9CAF00526CC5 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D54D4F1BFC9CAF00526CC5 /* Extensions.swift */; };
+		65D54D581BFC9EA300526CC5 /* name.csv in Resources */ = {isa = PBXBuildFile; fileRef = 65D54D521BFC9EA300526CC5 /* name.csv */; };
+		65D54D591BFC9EA300526CC5 /* NameGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 65D54D541BFC9EA300526CC5 /* NameGenerator.m */; };
+		65D54D5B1BFC9EA300526CC5 /* syllable.csv in Resources */ = {isa = PBXBuildFile; fileRef = 65D54D561BFC9EA300526CC5 /* syllable.csv */; };
+		65D54D5C1BFC9EA300526CC5 /* title.csv in Resources */ = {isa = PBXBuildFile; fileRef = 65D54D571BFC9EA300526CC5 /* title.csv */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +29,13 @@
 		65D54D451BFC7F0E00526CC5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		65D54D471BFC7F0E00526CC5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		65D54D4D1BFC7FE700526CC5 /* RadarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RadarView.swift; sourceTree = "<group>"; };
+		65D54D4F1BFC9CAF00526CC5 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		65D54D521BFC9EA300526CC5 /* name.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = name.csv; sourceTree = "<group>"; };
+		65D54D531BFC9EA300526CC5 /* NameGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NameGenerator.h; sourceTree = "<group>"; };
+		65D54D541BFC9EA300526CC5 /* NameGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NameGenerator.m; sourceTree = "<group>"; };
+		65D54D561BFC9EA300526CC5 /* syllable.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = syllable.csv; sourceTree = "<group>"; };
+		65D54D571BFC9EA300526CC5 /* title.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = title.csv; sourceTree = "<group>"; };
+		65D54D5D1BFC9F6800526CC5 /* Radar-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Radar-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,6 +53,7 @@
 			isa = PBXGroup;
 			children = (
 				65D54D3A1BFC7F0E00526CC5 /* MentosRadar */,
+				65D54D511BFC9EA300526CC5 /* NameGenerator */,
 				65D54D391BFC7F0E00526CC5 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -59,12 +72,27 @@
 				65D54D3B1BFC7F0E00526CC5 /* AppDelegate.swift */,
 				65D54D3D1BFC7F0E00526CC5 /* ViewController.swift */,
 				65D54D4D1BFC7FE700526CC5 /* RadarView.swift */,
+				65D54D4F1BFC9CAF00526CC5 /* Extensions.swift */,
+				65D54D5D1BFC9F6800526CC5 /* Radar-Bridging-Header.h */,
 				65D54D3F1BFC7F0E00526CC5 /* Main.storyboard */,
 				65D54D441BFC7F0E00526CC5 /* LaunchScreen.storyboard */,
 				65D54D421BFC7F0E00526CC5 /* Assets.xcassets */,
 				65D54D471BFC7F0E00526CC5 /* Info.plist */,
 			);
 			path = MentosRadar;
+			sourceTree = "<group>";
+		};
+		65D54D511BFC9EA300526CC5 /* NameGenerator */ = {
+			isa = PBXGroup;
+			children = (
+				65D54D531BFC9EA300526CC5 /* NameGenerator.h */,
+				65D54D541BFC9EA300526CC5 /* NameGenerator.m */,
+				65D54D521BFC9EA300526CC5 /* name.csv */,
+				65D54D561BFC9EA300526CC5 /* syllable.csv */,
+				65D54D571BFC9EA300526CC5 /* title.csv */,
+			);
+			name = NameGenerator;
+			path = Frameworks/NameGenerator;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -126,8 +154,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				65D54D461BFC7F0E00526CC5 /* LaunchScreen.storyboard in Resources */,
+				65D54D5B1BFC9EA300526CC5 /* syllable.csv in Resources */,
 				65D54D431BFC7F0E00526CC5 /* Assets.xcassets in Resources */,
 				65D54D411BFC7F0E00526CC5 /* Main.storyboard in Resources */,
+				65D54D581BFC9EA300526CC5 /* name.csv in Resources */,
+				65D54D5C1BFC9EA300526CC5 /* title.csv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,8 +170,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				65D54D3E1BFC7F0E00526CC5 /* ViewController.swift in Sources */,
+				65D54D591BFC9EA300526CC5 /* NameGenerator.m in Sources */,
 				65D54D4E1BFC7FE700526CC5 /* RadarView.swift in Sources */,
 				65D54D3C1BFC7F0E00526CC5 /* AppDelegate.swift in Sources */,
+				65D54D501BFC9CAF00526CC5 /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -255,6 +288,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Funtasty.MentosRadar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "MentosRadar/Radar-Bridging-Header.h";
 			};
 			name = Debug;
 		};
@@ -266,6 +300,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.Funtasty.MentosRadar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "MentosRadar/Radar-Bridging-Header.h";
 			};
 			name = Release;
 		};
