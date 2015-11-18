@@ -65,19 +65,19 @@ class ViewController: UIViewController, RadarDataSource, RadarDelegate {
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
 
-        self.initObjects()
+        initObjects()
     }
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        self.initObjects()
+        initObjects()
     }
     
-    internal func initObjects() {
+    private func initObjects() {
         let limit = Int.random(5, 20)
         for var i = 0; i < limit; i++ {
-            let object = ViewObject(title: nameGeneator.getName(), photo: UIImage(named: "default-ico")!, identifierIcon: nil, distance: Double.random(0, 2500))
+            let object = ViewObject(title: nameGeneator.getName().componentsSeparatedByString(" ").first!, photo: UIImage(named: "default-ico")!, identifierIcon: nil, distance: Double.random(0, 2500))
             radarObjects.append(object)
         }
         NSLog("\(radarObjects)")

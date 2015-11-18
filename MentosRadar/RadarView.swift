@@ -10,29 +10,158 @@ import UIKit
 import CoreLocation
 
 
-// Name of the radar class
-@objc class RadarView : UIView {
-    @IBOutlet weak var delegate: RadarDelegate!
-    @IBOutlet weak var dataSource: RadarDataSource!
-    
+private class RadarPointView: UIButton {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        self.initView()
+        initView()
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
-        self.initView()
+        initView()
     }
     
-    internal func initView() {
-        self.backgroundColor = UIColor.redColor()
+    private func initView() {
+        backgroundColor = UIColor.blueColor()
+        
+        titleLabel?.font = UIFont(name: "Avenir-Book", size: 14)
+        titleLabel?.textColor = UIColor.blackColor()
+        titleLabel?.textAlignment = .Center
+        titleLabel?.lineBreakMode = .ByTruncatingTail
+        
+        imageView?.layer.masksToBounds = true
+        imageView?.contentMode = .ScaleAspectFill
+        
+        setNeedsDisplay()
+    }
+    
+    var object: RadarObjectProtocol! {
+        didSet {
+            setTitle(object.title(), forState: .Normal)
+            setImage(object.photo(), forState: .Normal)
+        }
+    }
+    
+    override private func titleRectForContentRect(contentRect: CGRect) -> CGRect {
+        let width = contentRect.width
+        return CGRectMake(0.0, width, width, contentRect.height - width)
+    }
+    
+    override private func imageRectForContentRect(contentRect: CGRect) -> CGRect {
+        let width = contentRect.width
+        if width == 0 {
+            return CGRectZero
+        }
+        imageView?.layer.cornerRadius = width / 2
+        return CGRectMake(0.0, 0.0, width, width)
+    }
+    
+}
+
+
+// Name of the radar class
+@objc class RadarView : UIView {
+    private var numberOfSegments: Int = 3
+    private var segments: [CLLocationDistance: [RadarObjectProtocol]]!
+
+    private var numberOfPoints: Int = 0
+    private var visiblePoints: [RadarPointView] = []
+    private var recycledPoints: Set<RadarPointView> = Set()
+    
+    var pointSize: CGFloat = 60.0 {
+        didSet {
+            reloadData()
+        }
+    }
+    
+    @IBOutlet weak var delegate: RadarDelegate!
+    @IBOutlet weak var dataSource: RadarDataSource! {
+        didSet {
+            reloadData()
+        }
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        initView()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        
+        initView()
+    }
+    
+    private func initView() {
+        backgroundColor = UIColor.grayColor()
     }
     
     func reloadData() {
+        let limit = dataSource.numberOfObjects(self)
         
+        if numberOfPoints > limit {
+            recycledPoints.removeAll()
+            let removeLimit = numberOfPoints - limit
+            for var i = 0; i < removeLimit; i++ {
+                if recycledPoints.count < 5 {
+                    recyclePointView(visiblePoints.last!)
+                } else {
+                    removePointView(visiblePoints.last!)
+                }
+                visiblePoints.removeLast()
+            }
+        } else {
+            let insertLimit = limit - numberOfPoints
+            for var i = 0; i < insertLimit; i++ {
+                visiblePoints.append(dequeueRecycledPointView())
+            }
+        }
+        numberOfPoints = limit
+        let pointHeight = Int(pointSize) + 30
+        
+        for var i = 0; i < limit; i++ {
+            let object = dataSource.objectForIndex(self, index: i);
+            let view = visiblePoints[i];
+            view.object = object
+            view.frame = CGRectMake(10.0, CGFloat(10 + ((pointHeight + 10) * i)), pointSize, CGFloat(pointHeight))
+            addSubview(view)
+        }
+    }
+    
+    private func dequeueRecycledPointView() -> RadarPointView {
+        var view = recycledPoints.first
+        if view == nil {
+            view = RadarPointView()
+            view?.addTarget(self, action: "didTapPoint:", forControlEvents: .TouchUpInside)
+        } else {
+            recycledPoints.remove(view!)
+        }
+        return view!
+    }
+    
+    private func removePointView(view: RadarPointView) {
+        view.object = nil
+        view.removeFromSuperview()
+    }
+    
+    private func recyclePointView(view: RadarPointView) {
+        removePointView(view)
+        recycledPoints.insert(view)
+    }
+    
+    // MARK: - Actions
+    
+    private func didTapPoint(sender: RadarPointView) {
+        if delegate == nil {
+            return;
+        }
+        let index = visiblePoints.indexOf(sender)
+        if index != nil {
+            delegate.didSelectObjectAtIndex!(self, index: index!)
+        }
     }
 }
 

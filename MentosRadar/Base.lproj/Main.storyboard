@@ -3,7 +3,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -19,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kVO-Vc-of1" customClass="RadarView" customModule="MentosRadar" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <rect key="frame" x="0.0" y="20" width="600" height="580"/>
                                 <animations/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
@@ -27,12 +26,13 @@
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="kVO-Vc-of1" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="topMargin" id="Hv5-Ew-wg1"/>
-                            <constraint firstItem="kVO-Vc-of1" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-20" id="X1F-Jr-FWE"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="kVO-Vc-of1" secondAttribute="bottom" id="cuH-va-8qr"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="kVO-Vc-of1" secondAttribute="trailing" constant="-20" id="fWI-FR-PiV"/>
+                            <constraint firstItem="kVO-Vc-of1" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="7Oy-Lp-eUZ"/>
+                            <constraint firstAttribute="trailing" secondItem="kVO-Vc-of1" secondAttribute="trailing" id="Fjt-Rf-Aqu"/>
+                            <constraint firstItem="kVO-Vc-of1" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" id="ThF-Jo-Awg"/>
+                            <constraint firstItem="kVO-Vc-of1" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="zR2-11-9xW"/>
                         </constraints>
                     </view>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
                     <connections>
                         <outlet property="radarView" destination="kVO-Vc-of1" id="c3L-lm-ls6"/>
                     </connections>
