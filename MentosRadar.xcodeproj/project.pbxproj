@@ -21,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		655BA26C1BFCC79B003949AC /* RadarPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = RadarPlayground.playground; sourceTree = "<group>"; };
 		65D54D381BFC7F0E00526CC5 /* MentosRadar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MentosRadar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		65D54D3B1BFC7F0E00526CC5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		65D54D3D1BFC7F0E00526CC5 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -78,6 +79,7 @@
 				65D54D441BFC7F0E00526CC5 /* LaunchScreen.storyboard */,
 				65D54D421BFC7F0E00526CC5 /* Assets.xcassets */,
 				65D54D471BFC7F0E00526CC5 /* Info.plist */,
+				655BA26C1BFCC79B003949AC /* RadarPlayground.playground */,
 			);
 			path = MentosRadar;
 			sourceTree = "<group>";
@@ -323,6 +325,7 @@
 				65D54D4C1BFC7F0E00526CC5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
