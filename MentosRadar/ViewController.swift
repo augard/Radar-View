@@ -65,6 +65,7 @@ class ViewController: UIViewController, UITabBarDelegate, RadarDataSource, Radar
     var radarObjects: [RadarObjectProtocol] = []
     
     @IBOutlet weak var radarView: RadarView!
+    @IBOutlet weak var tabBar: UITabBar!
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -79,6 +80,8 @@ class ViewController: UIViewController, UITabBarDelegate, RadarDataSource, Radar
     }
     
     private func initObjects() {
+        radarObjects.removeAll()
+        
         let indicator = UIImage(named: "indicator")
         let limit = Int.random(3, 25)
         let distanceMax = Double.random(3500, 25000)
@@ -97,6 +100,8 @@ class ViewController: UIViewController, UITabBarDelegate, RadarDataSource, Radar
 
         radarView.dataSource = self
         radarView.delegate = self
+        
+        tabBar.selectedItem = tabBar.items?.first
     }
 
     // MARK: - RadarDataSource
@@ -107,6 +112,18 @@ class ViewController: UIViewController, UITabBarDelegate, RadarDataSource, Radar
     
     func objectForIndex(radar: RadarView, index: Int) -> RadarObjectProtocol {
         return radarObjects[index]
+    }
+    
+    // MARK: - UITabBarDelegate
+    
+    func tabBar(tabBar: UITabBar, didSelectItem item: UITabBarItem) {
+        let index = tabBar.items?.indexOf(item)
+        
+        if index == 1 {
+            tabBar.selectedItem = tabBar.items?.first
+            initObjects()
+            radarView.reloadData()
+        }
     }
 }
 

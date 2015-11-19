@@ -147,7 +147,7 @@ private class RadarPointView: UIButton {
     }
     
     private func calcNumberOfSegments() -> Int {
-        return Int((frame.height - margin * 2) / (pointSize + titleHeight + margin * 2))
+        return Int((frame.height - margin * 2) / (pointSize + titleHeight + margin))
     }
     
     private func initView() {
