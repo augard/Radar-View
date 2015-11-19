@@ -59,7 +59,7 @@ import CoreLocation
 }
 
 
-class ViewController: UIViewController, RadarDataSource, RadarDelegate {
+class ViewController: UIViewController, UITabBarDelegate, RadarDataSource, RadarDelegate {
     
     var nameGeneator: NameGenerator = NameGenerator()
     var radarObjects: [RadarObjectProtocol] = []

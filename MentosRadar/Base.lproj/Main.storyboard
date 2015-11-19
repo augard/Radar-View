@@ -18,19 +18,40 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kVO-Vc-of1" customClass="RadarView" customModule="MentosRadar" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="20" width="600" height="580"/>
+                                <rect key="frame" x="0.0" y="20" width="600" height="531"/>
                                 <animations/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
+                            <tabBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="W5G-ru-t1E">
+                                <rect key="frame" x="0.0" y="551" width="600" height="49"/>
+                                <animations/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <items>
+                                    <tabBarItem systemItem="contacts" id="bQQ-rE-N4e"/>
+                                    <tabBarItem title="" systemItem="more" id="tHA-kw-hTI"/>
+                                </items>
+                                <connections>
+                                    <outlet property="delegate" destination="BYZ-38-t0r" id="5gX-pp-hVh"/>
+                                </connections>
+                            </tabBar>
                         </subviews>
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstAttribute="bottom" secondItem="kVO-Vc-of1" secondAttribute="bottom" constant="49" id="5m8-lS-tFy"/>
                             <constraint firstItem="kVO-Vc-of1" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="7Oy-Lp-eUZ"/>
                             <constraint firstAttribute="trailing" secondItem="kVO-Vc-of1" secondAttribute="trailing" id="Fjt-Rf-Aqu"/>
-                            <constraint firstItem="kVO-Vc-of1" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" id="ThF-Jo-Awg"/>
+                            <constraint firstItem="W5G-ru-t1E" firstAttribute="trailing" secondItem="kVO-Vc-of1" secondAttribute="trailing" id="Fzy-J5-OIG"/>
+                            <constraint firstItem="kVO-Vc-of1" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" constant="-49" id="ThF-Jo-Awg"/>
+                            <constraint firstItem="W5G-ru-t1E" firstAttribute="top" secondItem="kVO-Vc-of1" secondAttribute="bottom" id="Vei-2F-be9"/>
+                            <constraint firstItem="W5G-ru-t1E" firstAttribute="leading" secondItem="kVO-Vc-of1" secondAttribute="leading" id="e7w-3d-Mrd"/>
                             <constraint firstItem="kVO-Vc-of1" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="zR2-11-9xW"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="ThF-Jo-Awg"/>
+                            </mask>
+                        </variation>
                     </view>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
                     <connections>
