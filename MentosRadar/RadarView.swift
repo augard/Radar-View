@@ -102,7 +102,7 @@ private class RadarPointView: UIButton {
 
 
 // Name of the radar class
-@objc class RadarView : UIView {
+@objc public class RadarView : UIView {
     private let margin: CGFloat = 10.0
     private let titleHeight: CGFloat = 30.0
     private let curveCorrection: CGFloat = 12.0
@@ -123,8 +123,8 @@ private class RadarPointView: UIButton {
     private var visiblePoints: [RadarPointView] = []
     private var recycledPoints: Set<RadarPointView> = Set()
     
-    @IBOutlet weak var delegate: RadarDelegate!
-    @IBOutlet weak var dataSource: RadarDataSource! {
+    @IBOutlet weak var delegate: RadarDelegate?
+    @IBOutlet weak var dataSource: RadarDataSource? {
         didSet {
             reloadData()
         }
@@ -136,7 +136,7 @@ private class RadarPointView: UIButton {
         initView()
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         
         initView()
@@ -154,7 +154,7 @@ private class RadarPointView: UIButton {
         backgroundColor = UIColor.grayColor()
     }
     
-    override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
         
         var needReload: Bool = false
@@ -232,7 +232,7 @@ private class RadarPointView: UIButton {
             self.cleanUp()
             return;
         }
-        numberOfPoints = dataSource.numberOfObjects(self)
+        numberOfPoints = dataSource!.numberOfObjects(self)
         segments.removeAll()
         points.removeAll()
         
@@ -247,7 +247,7 @@ private class RadarPointView: UIButton {
         var maxDistance: CLLocationDistance = 0
         
         for i in 0..<numberOfPoints {
-            let object = dataSource.objectForIndex(self, index: i);
+            let object = dataSource!.objectForIndex(self, index: i);
             let distance: CLLocationDistance = object.distance()
             if distance < minDistance {
                 minDistance = distance
@@ -383,9 +383,9 @@ private class RadarPointView: UIButton {
                     indexes.append(objectIndex)
                 }
             }
-            delegate.didSelectGroupWithIndexes?(self, indexes: indexes)
+            delegate!.didSelectGroupWithIndexes?(self, indexes: indexes)
         } else {
-            delegate.didSelectObjectAtIndex?(self, index: view.index)
+            delegate!.didSelectObjectAtIndex?(self, index: view.index)
         }
     }
     
@@ -406,7 +406,7 @@ private class RadarPointView: UIButton {
 }
 
 
-@objc protocol RadarDataSource {
+@objc public protocol RadarDataSource {
     /**
      Number of objects in radar.
      
@@ -427,7 +427,7 @@ private class RadarPointView: UIButton {
     func objectForIndex(radar: RadarView, index : Int) -> RadarObjectProtocol
 }
 
-@objc protocol RadarDelegate {
+@objc public protocol RadarDelegate {
     /**
      Is called when user selects single object
      
@@ -447,7 +447,7 @@ private class RadarPointView: UIButton {
     optional func didSelectGroupWithIndexes(radar: RadarView, indexes: [Int])
 }
 
-@objc protocol RadarObjectProtocol {
+@objc public protocol RadarObjectProtocol {
     /**
      Title for object in radar
      
