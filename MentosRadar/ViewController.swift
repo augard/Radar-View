@@ -98,9 +98,24 @@ class ViewController: UIViewController, UITabBarDelegate, RadarDataSource, Radar
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        switch (self.view.frame.width) {
+        case 320:
+            radarView.backgroundImage = UIImage(named: "bg_ip5")!
+            radarView.pointSpacing = 100.0
+            break;
+        case 375:
+            radarView.backgroundImage = UIImage(named: "bg_ip6")!
+            radarView.pointSpacing = 100.0
+            break;
+        default:
+            radarView.backgroundImage = UIImage(named: "bg_ip6plus")!
+            radarView.pointSpacing = 110.0
+            break;
+        }
         radarView.dataSource = self
         radarView.delegate = self
-        radarView.backgroundImage = UIImage(named: "bg_ip6")!
+        
+        NSLog("\(self.view.frame)")
     }
     
     override func viewWillAppear(animated: Bool) {

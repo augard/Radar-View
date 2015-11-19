@@ -17,6 +17,26 @@ private class RadarPointView: UIButton {
     
     private var indicatorView: UIImageView!
     
+    private var _groupOverlayer: UIView?
+    private var groupOverlayer: UIView! {
+        get {
+            if (_groupOverlayer == nil) {
+                _groupOverlayer = UIView(frame: CGRectZero)
+                _groupOverlayer?.backgroundColor = UIColor(red:0.498,  green:0.804,  blue:0.898, alpha:1)
+                _groupOverlayer?.hidden = true
+                _groupOverlayer?.alpha = 0.65
+                imageView?.addSubview(_groupOverlayer!)
+            } else {
+                imageView?.bringSubviewToFront(_groupOverlayer!)
+            }
+            return _groupOverlayer!
+        }
+        set {
+            _groupOverlayer?.removeFromSuperview()
+            _groupOverlayer = nil
+        }
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -51,21 +71,27 @@ private class RadarPointView: UIButton {
                 indicatorView.image = nil
                 return;
             }
-            let distance = Int(object.distance())
+            
             let color = object.titleColor()
             setTitle(object.title(), forState: .Normal)
+            
+            //let distance = Int(object.distance())
             //setTitle("\(index) \(distance)", forState: .Normal)
+            
+            setImage(object.photo(), forState: .Normal)
             
             if group {
                 titleLabel?.font = UIFont(name: "Avenir-Medium", size: 19)
                 setTitleColor(UIColor.whiteColor(), forState: .Normal)
                 indicatorView.image = nil
+                groupOverlayer.hidden = false
+                groupOverlayer.frame = (imageView?.bounds)!
             } else {
                 titleLabel?.font = UIFont(name: "Avenir-Book", size: 14)
                 setTitleColor(color == nil ? UIColor.blackColor() : color, forState: .Normal)
                 indicatorView.image = object.identifierIcon()
+                groupOverlayer = nil
             }
-            setImage(object.photo(), forState: .Normal)
             indicatorView.hidden = indicatorView.image == nil
             
             self.setNeedsLayout()
@@ -78,6 +104,10 @@ private class RadarPointView: UIButton {
         if indicatorView.image != nil {
             let imageSize = indicatorView.image!.size
             indicatorView.frame = CGRectMake(frame.width - imageSize.width - 2.0, 2.0, imageSize.width, imageSize.height)
+        }
+        
+        if _groupOverlayer != nil {
+            groupOverlayer.frame = (imageView?.bounds)!
         }
     }
     
@@ -112,6 +142,15 @@ private class RadarPointView: UIButton {
     var backgroundImage: UIImage? {
         didSet {
             backgroundView.image = backgroundImage
+        }
+    }
+    
+    /**
+     @param How much space keep between points
+     */
+    var pointSpacing: CGFloat = 100.0 {
+        didSet {
+            reloadData()
         }
     }
     
@@ -163,7 +202,7 @@ private class RadarPointView: UIButton {
     }
     
     private func calcNumberOfSegments() -> Int {
-        return Int((frame.height - margin * 2) / (pointSize + titleHeight + margin))
+        return Int((frame.height - margin * 2) / (pointSpacing))
     }
     
     private func initView() {
@@ -198,7 +237,7 @@ private class RadarPointView: UIButton {
                 }
             } else if (numberOfSegments < segments) {
                 while segmentsLabel.count != segments {
-                    let label: UILabel = UILabel(frame: CGRect(x: 0.0, y: 0.0, width: 50.0, height: 20.0))
+                    let label: UILabel = UILabel(frame: CGRect(x: 0.0, y: 0.0, width: 50.0, height: 40.0))
                     label.textAlignment = .Center
                     label.textColor = UIColor(red:0.663,  green:0.878,  blue:0.925, alpha:1)
                     label.font = UIFont(name: "Avenir-Heavy", size: 10)
@@ -315,7 +354,7 @@ private class RadarPointView: UIButton {
         
         // add views to radar
         let pointHeight = pointSize + titleHeight
-        let marginY = floor(((frame.height - 20.0) - (pointHeight * CGFloat(numberOfSegments))) / CGFloat(numberOfSegments))
+        let marginY = floor(((frame.height - 50.0) - (pointSpacing * CGFloat(numberOfSegments))) / CGFloat(numberOfSegments))
 
         var numberVerify = 0
         var viewIndex = 0
@@ -329,7 +368,7 @@ private class RadarPointView: UIButton {
             let maxCount: CGFloat = CGFloat(objects.count > maxPoints ? maxPoints : objects.count)
             let evenCount: Bool = maxCount % 2 == 0
             let marginX: CGFloat = floor((frame.width - (pointSize * maxCount)) / (maxCount + 1))
-            let originY: CGFloat = 10.0 + (marginY + pointHeight) * CGFloat(numberOfSegments - segmentIndex - 1)
+            let originY: CGFloat = 17.0 + (pointSpacing * CGFloat(numberOfSegments - segmentIndex - 1))
             
             let sortedKeysAndValues = objects.sort { $0.0 < $1.0 }
             for (objectIndex, object) in sortedKeysAndValues {
@@ -341,6 +380,7 @@ private class RadarPointView: UIButton {
                 if view.group {
                     view.setTitle("+\(objects.count - maxPoints)", forState: .Normal)
                 }
+                
                 var correctionY: CGFloat = 0
                 if evenCount {
                     if line == 0 || line == maxCount - 1 {
@@ -349,6 +389,14 @@ private class RadarPointView: UIButton {
                 } else if !evenCount && maxCount > 1 {
                     if line == 0 || line == maxCount - 1 {
                         correctionY = curveCorrection
+                    }
+                }
+                if correctionY > 0 {
+                    if frame.width > 320 {
+                        correctionY += CGFloat(numberOfSegments - segmentIndex)
+                    }
+                    if segmentIndex == 0 || segmentIndex == 1 {
+                        correctionY = curveCorrection * 2
                     }
                 }
                 view.frame = CGRectMake(marginX + ((marginX + pointSize) * line), marginY + originY + correctionY, pointSize, pointHeight)
@@ -366,11 +414,12 @@ private class RadarPointView: UIButton {
         NSLog("points \(numberOfPoints) vs verify \(numberVerify), distance objects \(distanceObjects.count) == 0")
         
         for segmentIndex in 0..<numberOfSegments {
-            let originY: CGFloat = (marginY + pointHeight) * CGFloat(numberOfSegments - segmentIndex - 1)
+            let originY: CGFloat = 17.0 + (pointSpacing * CGFloat(numberOfSegments - segmentIndex - 1)) - 13.0
             let label = segmentsLabel[segmentIndex]
             label.text = segmentLabelTitle(CLLocationDistance(segmentIndex * avargeDistance), segmentIndex: segmentIndex)
             label.frame = CGRectMake((frame.width - label.frame.width) / 2, marginY + originY + ((pointHeight - label.frame.height) / 2),
             label.frame.width, label.frame.height)
+            //bringSubviewToFront(label)
         }
     }
     
