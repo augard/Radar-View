@@ -82,13 +82,13 @@ class ViewController: UIViewController, UITabBarDelegate, RadarDataSource, Radar
     private func initObjects() {
         radarObjects.removeAll()
         
-        let indicator = UIImage(named: "indicator")
         let limit = Int.random(3, 25)
         let distanceMax = Double.random(3500, 25000)
         for _ in 0..<limit {
-            let object = ViewObject(title: nameGeneator.getName().componentsSeparatedByString(" ").first!,
+            let famale = Int.random(0, 1)
+            let object = ViewObject(title: nameGeneator.getName(true, male: famale == 0, prefix: true, postfix: true).componentsSeparatedByString(" ").first!,
                 photo: UIImage(named: "default-ico")!,
-                identifierIcon: Int.random(0, 1) == 1 ? indicator : nil,
+                identifierIcon: UIImage(named: famale == 1 ? "gender_female" : "gender_male")!,
                 distance: Double.random(0, distanceMax))
             radarObjects.append(object)
         }
@@ -100,6 +100,7 @@ class ViewController: UIViewController, UITabBarDelegate, RadarDataSource, Radar
 
         radarView.dataSource = self
         radarView.delegate = self
+        radarView.backgroundImage = UIImage(named: "bg_ip6")!
     }
     
     override func viewWillAppear(animated: Bool) {

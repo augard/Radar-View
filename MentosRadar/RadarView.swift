@@ -11,6 +11,10 @@ import CoreLocation
 
 
 private class RadarPointView: UIButton {
+    var segment: Int!
+    var index: Int!
+    var group: Bool = false
+    
     private var indicatorView: UIImageView!
     
     override init(frame: CGRect) {
@@ -30,7 +34,7 @@ private class RadarPointView: UIButton {
         indicatorView.userInteractionEnabled = false
         addSubview(indicatorView)
         
-        backgroundColor = UIColor.blueColor()
+        //backgroundColor = UIColor.blueColor()
         
         titleLabel?.font = UIFont(name: "Avenir-Book", size: 14)
         titleLabel?.textAlignment = .Center
@@ -49,27 +53,24 @@ private class RadarPointView: UIButton {
             }
             let distance = Int(object.distance())
             let color = object.titleColor()
-            //setTitle(object.title(), forState: .Normal)
-            setTitle("\(index) \(distance)", forState: .Normal)
+            setTitle(object.title(), forState: .Normal)
+            //setTitle("\(index) \(distance)", forState: .Normal)
             
             if group {
                 titleLabel?.font = UIFont(name: "Avenir-Medium", size: 19)
                 setTitleColor(UIColor.whiteColor(), forState: .Normal)
+                indicatorView.image = nil
             } else {
                 titleLabel?.font = UIFont(name: "Avenir-Book", size: 14)
                 setTitleColor(color == nil ? UIColor.blackColor() : color, forState: .Normal)
+                indicatorView.image = object.identifierIcon()
             }
             setImage(object.photo(), forState: .Normal)
-            indicatorView.image = object.identifierIcon()
             indicatorView.hidden = indicatorView.image == nil
             
             self.setNeedsLayout()
         }
     }
-    
-    var segment: Int!
-    var index: Int!
-    var group: Bool = false
     
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -106,6 +107,13 @@ private class RadarPointView: UIButton {
     private let margin: CGFloat = 10.0
     private let titleHeight: CGFloat = 30.0
     private let curveCorrection: CGFloat = 12.0
+    
+    var backgroundView: UIImageView!
+    var backgroundImage: UIImage? {
+        didSet {
+            backgroundView.image = backgroundImage
+        }
+    }
     
     /**
      @param Size of points
@@ -159,11 +167,18 @@ private class RadarPointView: UIButton {
     }
     
     private func initView() {
-        backgroundColor = UIColor.grayColor()
+        backgroundColor = UIColor.whiteColor()
+
+        backgroundView = UIImageView(frame: self.bounds)
+        backgroundView.backgroundColor = backgroundColor
+        backgroundView.contentMode = .Top
+        addSubview(backgroundView)
     }
     
     override public func layoutSubviews() {
         super.layoutSubviews()
+        
+        backgroundView.frame = self.bounds
         
         var needReload: Bool = false
         let pointsOnLine = calcNumberOfPoints()
@@ -185,10 +200,10 @@ private class RadarPointView: UIButton {
                 while segmentsLabel.count != segments {
                     let label: UILabel = UILabel(frame: CGRect(x: 0.0, y: 0.0, width: 50.0, height: 20.0))
                     label.textAlignment = .Center
-                    label.textColor = UIColor.whiteColor()
+                    label.textColor = UIColor(red:0.663,  green:0.878,  blue:0.925, alpha:1)
                     label.font = UIFont(name: "Avenir-Heavy", size: 10)
                     label.numberOfLines = 2
-                    label.backgroundColor = UIColor.purpleColor()
+                    //label.backgroundColor = UIColor.purpleColor()
                     addSubview(label)
                     segmentsLabel.append(label)
                 }
@@ -213,7 +228,7 @@ private class RadarPointView: UIButton {
         visiblePoints.removeAll()
     }
     
-    private func cleanUpViews(oldLimit: Int, limit: Int) {
+    private func cleanUpAndCreateViews(oldLimit: Int, limit: Int) {
         // clean up views
         if oldLimit > limit {
             recycledPoints.removeAll()
@@ -286,40 +301,45 @@ private class RadarPointView: UIButton {
                     }
                     points[currentIndex]![objectIndex] = object as? RadarObjectProtocol
                     distanceObjects.removeObject(object)
-                    if points[currentIndex]!.count <= maxPointsOnLine {
+                    if (currentIndex == 0 && points[currentIndex]!.count <= (maxPointsOnLine - 1)) {
+                        viewLimit++;
+                    } else if (currentIndex > 0 && points[currentIndex]!.count <= maxPointsOnLine) {
                         viewLimit++;
                     }
                 }
             }
             lastDistance = currentDistance
         }
-        self.cleanUpViews(self.visiblePoints.count, limit: viewLimit)
+        self.cleanUpAndCreateViews(self.visiblePoints.count, limit: viewLimit)
         NSLog("\(segments)")
         
         // add views to radar
         let pointHeight = pointSize + titleHeight
-        let marginY = floor((frame.height - (pointHeight * CGFloat(numberOfSegments))) / CGFloat(numberOfSegments + 1))
+        let marginY = floor(((frame.height - 20.0) - (pointHeight * CGFloat(numberOfSegments))) / CGFloat(numberOfSegments))
 
         var numberVerify = 0
         var viewIndex = 0
         
         for (segmentIndex, objects) in points {
             var line: CGFloat = 0
-            let maxCount: CGFloat = CGFloat(objects.count > maxPointsOnLine ? maxPointsOnLine : objects.count)
+            var maxPoints = maxPointsOnLine
+            if segmentIndex == 0 {
+                maxPoints--
+            }
+            let maxCount: CGFloat = CGFloat(objects.count > maxPoints ? maxPoints : objects.count)
             let evenCount: Bool = maxCount % 2 == 0
             let marginX: CGFloat = floor((frame.width - (pointSize * maxCount)) / (maxCount + 1))
-            let originY: CGFloat = (marginY + pointHeight) * CGFloat(numberOfSegments - segmentIndex - 1)
-            //let displayGroupView = objects.count > maxPointsOnLine
+            let originY: CGFloat = 10.0 + (marginY + pointHeight) * CGFloat(numberOfSegments - segmentIndex - 1)
             
             let sortedKeysAndValues = objects.sort { $0.0 < $1.0 }
             for (objectIndex, object) in sortedKeysAndValues {
                 let view = visiblePoints[viewIndex];
-                view.group = (objects.count > (maxPointsOnLine + 1) && Int(line) + 1 == maxPointsOnLine)
+                view.group = (objects.count > (maxPoints + 1) && Int(line) + 1 == maxPoints)
                 view.segment = segmentIndex
                 view.index = objectIndex
                 view.object = object
                 if view.group {
-                    view.setTitle("+\(objects.count - maxPointsOnLine)", forState: .Normal)
+                    view.setTitle("+\(objects.count - maxPoints)", forState: .Normal)
                 }
                 var correctionY: CGFloat = 0
                 if evenCount {
@@ -336,7 +356,7 @@ private class RadarPointView: UIButton {
                 
                 line++
                 viewIndex++
-                if Int(line) >= maxPointsOnLine {
+                if Int(line) >= maxPoints {
                     break;
                 }
             }
