@@ -107,6 +107,9 @@ private class RadarPointView: UIButton {
     private let titleHeight: CGFloat = 30.0
     private let curveCorrection: CGFloat = 12.0
     
+    /**
+     @param Size of points
+     */
     var pointSize: CGFloat = 60.0 {
         didSet {
             setNeedsLayout()
@@ -117,6 +120,11 @@ private class RadarPointView: UIButton {
     private var numberOfSegments: Int = 0
     private var segments: [Int: CLLocationDistance] = [:]
     private var segmentsLabel: [UILabel] = []
+    
+    /**
+     @param Min distance for radar scale (m)
+     */
+    public var minDistanceScale: CLLocationDistance = 5000.0
 
     private var points: [Int: [Int: RadarObjectProtocol]] = [:]
     private var numberOfPoints: Int = 0
@@ -257,7 +265,9 @@ private class RadarPointView: UIButton {
             }
             sourceObjects.addObject(object)
         }
-        
+        if minDistanceScale > maxDistance {
+            maxDistance = minDistanceScale
+        }
         let avargeDistance: Int = Int(ceil(maxDistance / Double(numberOfSegments)))
         var lastDistance: CLLocationDistance = 0
         let distanceObjects: NSMutableArray = sourceObjects.mutableCopy() as! NSMutableArray

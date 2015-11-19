@@ -100,6 +100,10 @@ class ViewController: UIViewController, UITabBarDelegate, RadarDataSource, Radar
 
         radarView.dataSource = self
         radarView.delegate = self
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
         
         tabBar.selectedItem = tabBar.items?.first
     }
