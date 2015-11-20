@@ -11,11 +11,27 @@ import CoreLocation
 
 
 private class RadarPointView: UIButton {
-    var segment: Int!
-    var index: Int!
+    var segmentIndex: Int!
+    var objectIndex: Int!
     var group: Bool = false
-    
-    private var indicatorView: UIImageView!
+   
+    private var _indicatorView: UIImageView?
+    private var indicatorView: UIImageView! {
+        get {
+            if (_indicatorView == nil) {
+                _indicatorView = UIImageView(frame: CGRectZero)
+                _indicatorView!.userInteractionEnabled = false
+                addSubview(_indicatorView!)
+            } else {
+                bringSubviewToFront(_indicatorView!)
+            }
+            return _indicatorView!
+        }
+        set {
+            _indicatorView?.removeFromSuperview()
+            _indicatorView = nil
+        }
+    }
     
     private var _groupOverlayer: UIView?
     private var groupOverlayer: UIView! {
@@ -50,10 +66,6 @@ private class RadarPointView: UIButton {
     }
     
     private func initView() {
-        indicatorView = UIImageView(frame: CGRectZero)
-        indicatorView.userInteractionEnabled = false
-        addSubview(indicatorView)
-        
         //backgroundColor = UIColor.blueColor()
         
         titleLabel?.font = UIFont(name: "Avenir-Book", size: 14)
@@ -83,13 +95,18 @@ private class RadarPointView: UIButton {
             if group {
                 titleLabel?.font = UIFont(name: "Avenir-Medium", size: 19)
                 setTitleColor(UIColor.whiteColor(), forState: .Normal)
-                indicatorView.image = nil
+                indicatorView = nil
                 groupOverlayer.hidden = false
                 groupOverlayer.frame = (imageView?.bounds)!
             } else {
                 titleLabel?.font = UIFont(name: "Avenir-Book", size: 14)
                 setTitleColor(color == nil ? UIColor.blackColor() : color, forState: .Normal)
-                indicatorView.image = object.identifierIcon()
+                let indicatorImage = object.identifierIcon()
+                if indicatorImage != nil {
+                    indicatorView.image = indicatorImage
+                } else {
+                    indicatorView = nil
+                }
                 groupOverlayer = nil
             }
             indicatorView.hidden = indicatorView.image == nil
@@ -381,8 +398,8 @@ private class RadarPointView: UIButton {
             for (objectIndex, object) in sortedKeysAndValues {
                 let view = visiblePoints[viewIndex];
                 view.group = (objects.count > (maxPoints + 1) && Int(line) + 1 == maxPoints)
-                view.segment = segmentIndex
-                view.index = objectIndex
+                view.segmentIndex = segmentIndex
+                view.objectIndex = objectIndex
                 view.object = object
                 if view.group {
                     view.setTitle("+\(objects.count - maxPoints)", forState: .Normal)
@@ -477,19 +494,19 @@ private class RadarPointView: UIButton {
         }
         let view: RadarPointView = sender as! RadarPointView
         if view.group {
-            let objects = points[view.segment]
+            let objects = points[view.segmentIndex]
             if objects == nil {
                 return
             }
             var indexes: [Int] = []
             for (objectIndex, _) in objects! {
-                if objectIndex >= view.index {
+                if objectIndex >= view.objectIndex {
                     indexes.append(objectIndex)
                 }
             }
             delegate!.didSelectGroupWithIndexes?(self, indexes: indexes)
         } else {
-            delegate!.didSelectObjectAtIndex?(self, index: view.index)
+            delegate!.didSelectObjectAtIndex?(self, index: view.objectIndex)
         }
     }
     

@@ -109,7 +109,7 @@ class ViewController: UIViewController, UITabBarDelegate, RadarDataSource, Radar
             break;
         default:
             radarView.backgroundImage = UIImage(named: "bg_ip6plus")!
-            radarView.pointSpacing = 113.0
+            radarView.pointSpacing = 115.0
             break;
         }
         radarView.dataSource = self
