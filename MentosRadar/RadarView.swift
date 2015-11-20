@@ -359,7 +359,8 @@ private class RadarPointView: UIButton {
         var numberVerify = 0
         var viewIndex = 0
         
-        for (segmentIndex, objects) in points {
+        let sortedPointsKeysAndValues = points.sort { $0.0 < $1.0 }
+        for (segmentIndex, objects) in sortedPointsKeysAndValues {
             var line: CGFloat = 0
             var maxPoints = maxPointsOnLine
             if segmentIndex == 0 {
@@ -369,6 +370,12 @@ private class RadarPointView: UIButton {
             let evenCount: Bool = maxCount % 2 == 0
             let marginX: CGFloat = floor((frame.width - (pointSize * maxCount)) / (maxCount + 1))
             let originY: CGFloat = 17.0 + (pointSpacing * CGFloat(numberOfSegments - segmentIndex - 1))
+            
+            // correction for label if we have more then 4
+            var labelCorrection: Bool = false
+            if evenCount && maxCount > 3 {
+                labelCorrection = true
+            }
             
             let sortedKeysAndValues = objects.sort { $0.0 < $1.0 }
             for (objectIndex, object) in sortedKeysAndValues {
@@ -381,10 +388,22 @@ private class RadarPointView: UIButton {
                     view.setTitle("+\(objects.count - maxPoints)", forState: .Normal)
                 }
                 
+                var offsetX: CGFloat = marginX + ((marginX + pointSize) * line)
                 var correctionY: CGFloat = 0
                 if evenCount {
                     if line == 0 || line == maxCount - 1 {
                         correctionY = curveCorrection
+                        if labelCorrection {
+                            correctionY += 5.0
+                        }
+                    }
+                    
+                    if labelCorrection {
+                        if line < (maxCount / 2) {
+                            offsetX -= 10.0
+                        } else {
+                            offsetX += 10.0
+                        }
                     }
                 } else if !evenCount && maxCount > 1 {
                     if line == 0 || line == maxCount - 1 {
@@ -395,11 +414,17 @@ private class RadarPointView: UIButton {
                     if frame.width > 320 {
                         correctionY += CGFloat(numberOfSegments - segmentIndex)
                     }
-                    if segmentIndex == 0 || segmentIndex == 1 {
-                        correctionY = curveCorrection * 2
+                    
+                    if maxCount > 2 {
+                        if segmentIndex == 1 {
+                            correctionY = correctionY * 1.5
+                        } else if segmentIndex == 0 {
+                            correctionY = correctionY * 1.6
+                        }
                     }
                 }
-                view.frame = CGRectMake(marginX + ((marginX + pointSize) * line), marginY + originY + correctionY, pointSize, pointHeight)
+                NSLog("s\(segmentIndex):\(line), \(correctionY), \(object.title())")
+                view.frame = CGRectMake(offsetX, marginY + originY + correctionY, pointSize, pointHeight)
                 addSubview(view)
                 
                 line++
