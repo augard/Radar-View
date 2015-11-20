@@ -440,7 +440,7 @@ private class RadarPointView: UIButton {
                         }
                     }
                 }
-                NSLog("s\(segmentIndex):\(line), \(correctionY), \(object.title())")
+                //NSLog("s\(segmentIndex):\(line), \(correctionY), \(object.title())")
                 view.frame = CGRectMake(offsetX, marginY + originY + correctionY, pointSize, pointHeight)
                 addSubview(view)
                 
