@@ -306,11 +306,11 @@ private class RadarPointView: UIButton {
     }
     
     func reloadData() {
-        NSLog("reloadData")
         if dataSource == nil || numberOfSegments == 0 {
             self.cleanUp()
             return;
         }
+        NSLog("reloadData")
         numberOfPoints = dataSource!.numberOfObjects(self)
         segments.removeAll()
         points.removeAll()
@@ -367,7 +367,7 @@ private class RadarPointView: UIButton {
             lastDistance = currentDistance
         }
         self.cleanUpAndCreateViews(self.visiblePoints.count, limit: viewLimit)
-        NSLog("\(segments)")
+        //NSLog("\(segments)")
         
         // add views to radar
         let pointHeight = pointSize + titleHeight
@@ -376,8 +376,8 @@ private class RadarPointView: UIButton {
         var numberVerify = 0
         var viewIndex = 0
         
-        let sortedPointsKeysAndValues = points.sort { $0.0 < $1.0 }
-        for (segmentIndex, objects) in sortedPointsKeysAndValues {
+        //let sortedPointsKeysAndValues = points.sort { $0.0 < $1.0 }
+        for (segmentIndex, objects) in points {
             var line: CGFloat = 0
             var maxPoints = maxPointsOnLine
             if segmentIndex == 0 {
@@ -455,8 +455,8 @@ private class RadarPointView: UIButton {
             }
             numberVerify += objects.count
         }
-        NSLog("viewLimit \(viewLimit) vs viewIndex \(viewIndex)")
-        NSLog("points \(numberOfPoints) vs verify \(numberVerify), distance objects \(distanceObjects.count) == 0")
+        //NSLog("viewLimit \(viewLimit) vs viewIndex \(viewIndex)")
+        //NSLog("points \(numberOfPoints) vs verify \(numberVerify), distance objects \(distanceObjects.count) == 0")
         
         for segmentIndex in 0..<numberOfSegments {
             let originY: CGFloat = 17.0 + (pointSpacing * CGFloat(numberOfSegments - segmentIndex - 1)) - 13.0
