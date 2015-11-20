@@ -430,6 +430,9 @@ private class RadarPointView: UIButton {
                 if correctionY > 0 {
                     if frame.width > 320 {
                         correctionY += CGFloat(numberOfSegments - segmentIndex)
+                        if frame.width > 375 && segmentIndex == 0 {
+                            correctionY *= 3
+                        }
                     }
                     
                     if maxCount > 2 {
