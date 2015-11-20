@@ -40,7 +40,7 @@ private class RadarPointView: UIButton {
                 _groupOverlayer = UIView(frame: CGRectZero)
                 _groupOverlayer?.backgroundColor = UIColor(red:0.498,  green:0.804,  blue:0.898, alpha:1)
                 _groupOverlayer?.hidden = true
-                _groupOverlayer?.alpha = 0.65
+                _groupOverlayer?.alpha = 0.85
                 imageView?.addSubview(_groupOverlayer!)
             } else {
                 imageView?.bringSubviewToFront(_groupOverlayer!)
@@ -234,6 +234,29 @@ private class RadarPointView: UIButton {
         addSubview(backgroundView)
     }
     
+    func circleLayer() -> CAShapeLayer {
+        let circleRadius: CGFloat = self.bounds.size.width / 2;
+        let circleLayer: CAShapeLayer = CAShapeLayer()
+        circleLayer.frame = self.bounds;
+        circleLayer.fillColor = UIColor.clearColor().CGColor
+        circleLayer.strokeColor = UIColor(red:0.898, green:0.969, blue:0.980, alpha:1).CGColor
+        circleLayer.lineWidth = 1
+        
+        let shape: UIBezierPath = UIBezierPath()
+        let center: CGPoint = CGPoint(x: CGRectGetMidX(self.bounds), y: CGRectGetMinY(self.bounds) + 46.0);
+        shape.moveToPoint(CGPoint(x: -40.0, y: center.y + circleRadius))
+        shape.addCurveToPoint(CGPoint(x: circleLayer.frame.width + 40.0, y: center.y + circleRadius),
+            controlPoint1: CGPoint(x: center.x - 60.0, y: center.y + circleRadius - 80),
+            controlPoint2: CGPoint(x: center.x + 60.0, y: center.y + circleRadius - 80))
+        
+        circleLayer.path = shape.CGPath;
+        circleLayer.shadowColor = UIColor(red:0.682, green:0.969, blue:0.961, alpha:1).CGColor
+        circleLayer.shadowOpacity = 1;
+        circleLayer.shadowOffset = CGSizeMake(0, 4);
+        circleLayer.shadowRadius = 7;
+        return circleLayer;
+    }
+    
     override public func layoutSubviews() {
         super.layoutSubviews()
         
@@ -313,6 +336,7 @@ private class RadarPointView: UIButton {
             self.cleanUp()
             return;
         }
+        //self.layer.addSublayer(self.circleLayer())
         NSLog("reloadData")
         numberOfPoints = dataSource!.numberOfObjects(self)
         segments.removeAll()
