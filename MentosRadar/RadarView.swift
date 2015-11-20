@@ -155,7 +155,10 @@ private class RadarPointView: UIButton {
     private let titleHeight: CGFloat = 30.0
     private let curveCorrection: CGFloat = 12.0
     
-    var backgroundView: UIImageView!
+    private var backgroundView: UIImageView!
+    /**
+     @param Radar background image
+     */
     var backgroundImage: UIImage? {
         didSet {
             backgroundView.image = backgroundImage
@@ -214,11 +217,11 @@ private class RadarPointView: UIButton {
         initView()
     }
     
-    private func calcNumberOfPoints() -> Int {
+    private var figureNumberOfPoints: Int {
         return Int((frame.width - margin * 2) / (pointSize + margin * 2 + 5.0))
     }
     
-    private func calcNumberOfSegments() -> Int {
+    private var figureNumberOfSegments: Int {
         return Int((frame.height - margin * 2) / (pointSpacing))
     }
     
@@ -237,8 +240,8 @@ private class RadarPointView: UIButton {
         backgroundView.frame = self.bounds
         
         var needReload: Bool = false
-        let pointsOnLine = calcNumberOfPoints()
-        let segments = calcNumberOfSegments()
+        let pointsOnLine = figureNumberOfPoints
+        let segments = figureNumberOfSegments
         NSLog("Radar layout, max points on line \(pointsOnLine), max rows \(segments)")
         
         if maxPointsOnLine != pointsOnLine {
