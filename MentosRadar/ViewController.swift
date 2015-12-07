@@ -10,7 +10,7 @@ import UIKit
 import CoreLocation
 
 
-class ViewObject: RadarObjectProtocol {
+class ViewObject: RadarObjectProtocol, CustomStringConvertible {
     private var vDistance: CLLocationDistance
     private var vTitle: String
     private var vPhoto: UIImage
@@ -41,6 +41,10 @@ class ViewObject: RadarObjectProtocol {
     
     func rv_distanceFromCurrentPosition() -> CLLocationDistance {
         return vDistance
+    }
+    
+    var description: String {
+        return "\(self.dynamicType): \(vTitle), \(vDistance)\n"
     }
 }
 

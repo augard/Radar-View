@@ -573,7 +573,7 @@ private class RadarPointView: UIButton {
         var distance: String = numberFormatter.stringFromNumber(locationDistance / 1000)!
         var unit = "km"
         if (Int(locationDistance / 1000) == 0 && segmentIndex != 0) {
-            distance = numberFormatter.stringFromNumber(locationDistance)!
+            distance = numberFormatter.stringFromNumber(roundToTens(locationDistance))!
             unit = "m"
         }
         
@@ -585,6 +585,10 @@ private class RadarPointView: UIButton {
             labelTitle = "\(distance) \(unit)"
         }
         return labelTitle
+    }
+    
+    func roundToTens(x : Double) -> Int {
+        return 100 * Int(round(x / 100.0))
     }
 }
 
