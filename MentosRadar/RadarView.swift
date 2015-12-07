@@ -194,6 +194,7 @@ private class RadarPointView: UIButton {
      @param Min distance for radar scale (m)
      */
     public var minDistanceScale: CLLocationDistance = 1250.0
+    private var roundDistance: Bool = false
 
     private var points: [Int: [Int: RadarObjectProtocol]] = [:]
     private var numberOfPoints: Int = 0
@@ -388,6 +389,9 @@ private class RadarPointView: UIButton {
         if minDistanceScale > maxDistance {
             maxDistance = minDistanceScale
         }
+        roundDistance = !(Int(maxDistance) / numberOfSegments > 1000) // round it when we have some distance in meters
+        numberFormatter.maximumFractionDigits = roundDistance ? 1 : 0
+        
         let avargeDistance: Int = Int(ceil(maxDistance / Double(numberOfSegments)))
         var lastDistance: CLLocationDistance = 0
         let distanceObjects: NSMutableArray = sourceObjects.mutableCopy() as! NSMutableArray
@@ -480,7 +484,7 @@ private class RadarPointView: UIButton {
                     if frame.width > 320 {
                         correctionY += CGFloat(numberOfSegments - segmentIndex)
                         if frame.width > 375 && segmentIndex == 0 {
-                            correctionY *= 3
+                            correctionY *= 2
                         }
                     }
                     

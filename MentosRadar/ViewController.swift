@@ -69,7 +69,7 @@ class ViewController: UIViewController, UITabBarDelegate, RadarDataSource, Radar
         radarObjects.removeAll()
         
         let limit = Int.random(3, 25)
-        let distanceMax = Double.random(1500, 100)
+        let distanceMax = Double.random(3500, 25000) //Double.random(1500, 100) min distance
         for _ in 0..<limit {
             let famale = Int.random(0, 1)
             let object = ViewObject(title: nameGeneator.getName(true, male: famale == 0, prefix: true, postfix: true).componentsSeparatedByString(" ").first!,
