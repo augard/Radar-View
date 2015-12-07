@@ -155,6 +155,8 @@ private class RadarPointView: UIButton {
     private let titleHeight: CGFloat = 30.0
     private let curveCorrection: CGFloat = 12.0
     
+    private let numberFormatter = NSNumberFormatter()
+    
     private var backgroundView: UIImageView!
     /**
      @param Radar background image
@@ -191,7 +193,7 @@ private class RadarPointView: UIButton {
     /**
      @param Min distance for radar scale (m)
      */
-    public var minDistanceScale: CLLocationDistance = 5000.0
+    public var minDistanceScale: CLLocationDistance = 1250.0
 
     private var points: [Int: [Int: RadarObjectProtocol]] = [:]
     private var numberOfPoints: Int = 0
@@ -226,6 +228,9 @@ private class RadarPointView: UIButton {
     }
     
     private func initView() {
+        numberFormatter.numberStyle = NSNumberFormatterStyle.DecimalStyle
+        numberFormatter.maximumFractionDigits = 1
+        
         backgroundColor = UIColor.whiteColor()
 
         backgroundView = UIImageView(frame: self.bounds)
@@ -559,15 +564,21 @@ private class RadarPointView: UIButton {
     
     // MARK: -
     
-    private func segmentLabelTitle(distance: CLLocationDistance, segmentIndex: Int) -> String {
+    private func segmentLabelTitle(locationDistance: CLLocationDistance, segmentIndex: Int) -> String {
         let labelTitle: String!
-        let distance: Int = Int(distance / 1000)
+        var distance: String = numberFormatter.stringFromNumber(locationDistance / 1000)!
+        var unit = "km"
+        if (Int(locationDistance / 1000) == 0 && segmentIndex != 0) {
+            distance = numberFormatter.stringFromNumber(locationDistance)!
+            unit = "m"
+        }
+        
         if segmentIndex == 0 {
             labelTitle = "Blízko"
         } else if segmentIndex + 1 == numberOfSegments {
-            labelTitle = "\(distance) km\na dále"
+            labelTitle = "\(distance) \(unit)\na dále"
         } else {
-            labelTitle = "\(distance) km"
+            labelTitle = "\(distance) \(unit)"
         }
         return labelTitle
     }
