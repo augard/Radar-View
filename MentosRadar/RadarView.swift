@@ -84,13 +84,13 @@ private class RadarPointView: UIButton {
                 return;
             }
             
-            let color = object.titleColor()
-            setTitle(object.title(), forState: .Normal)
+            let color = object.rv_titleColor()
+            setTitle(object.rv_title(), forState: .Normal)
             
             //let distance = Int(object.distance())
             //setTitle("\(index) \(distance)", forState: .Normal)
             
-            setImage(object.photo(), forState: .Normal)
+            object.rv_photo(self)
             
             if group {
                 titleLabel?.font = UIFont(name: "Avenir-Medium", size: 19)
@@ -101,7 +101,7 @@ private class RadarPointView: UIButton {
             } else {
                 titleLabel?.font = UIFont(name: "Avenir-Book", size: 14)
                 setTitleColor(color == nil ? UIColor.blackColor() : color, forState: .Normal)
-                let indicatorImage = object.identifierIcon()
+                let indicatorImage = object.rv_identifierIcon()
                 if indicatorImage != nil {
                     indicatorView.image = indicatorImage
                 } else {
@@ -198,8 +198,8 @@ private class RadarPointView: UIButton {
     private var visiblePoints: [RadarPointView] = []
     private var recycledPoints: Set<RadarPointView> = Set()
     
-    @IBOutlet weak var delegate: RadarDelegate?
-    @IBOutlet weak var dataSource: RadarDataSource? {
+    weak var delegate: RadarDelegate?
+    weak var dataSource: RadarDataSource? {
         didSet {
             reloadData()
         }
@@ -232,6 +232,23 @@ private class RadarPointView: UIButton {
         backgroundView.backgroundColor = backgroundColor
         backgroundView.contentMode = .Top
         addSubview(backgroundView)
+        
+        
+        switch (UIScreen.mainScreen().bounds.width) {
+        case 320:
+            self.backgroundImage = UIImage(named: "bg_ip5")!
+            self.pointSpacing = 100.0
+            break;
+        case 375:
+            self.backgroundImage = UIImage(named: "bg_ip6")!
+            self.pointSpacing = 100.0
+            break;
+        default:
+            self.backgroundImage = UIImage(named: "bg_ip6plus")!
+            self.pointSpacing = 113.0
+            break;
+        }
+
     }
     
     func circleLayer() -> CAShapeLayer {
@@ -354,7 +371,7 @@ private class RadarPointView: UIButton {
         
         for i in 0..<numberOfPoints {
             let object = dataSource!.objectForIndex(self, index: i);
-            let distance: CLLocationDistance = object.distance()
+            let distance: CLLocationDistance = object.rv_distanceFromCurrentPosition()
             if distance < minDistance {
                 minDistance = distance
             }
@@ -377,7 +394,7 @@ private class RadarPointView: UIButton {
             let objects: NSArray = distanceObjects.copy() as! NSArray
             for object in objects {
                 let objectIndex = sourceObjects.indexOfObject(object)
-                let distance = object.distance()
+                let distance = (object as! RadarObjectProtocol).rv_distanceFromCurrentPosition()
                 if lastDistance <= distance && distance <= currentDistance {
                     if points[currentIndex] == nil {
                         points[currentIndex] = [:]
@@ -534,9 +551,9 @@ private class RadarPointView: UIButton {
                     indexes.append(objectIndex)
                 }
             }
-            delegate!.didSelectGroupWithIndexes?(self, indexes: indexes)
+            delegate?.didSelectGroupWithIndexes(self, indexes: indexes)
         } else {
-            delegate!.didSelectObjectAtIndex?(self, index: view.objectIndex)
+            delegate?.didSelectObjectAtIndex(self, index: view.objectIndex)
         }
     }
     
@@ -557,7 +574,7 @@ private class RadarPointView: UIButton {
 }
 
 
-@objc public protocol RadarDataSource {
+public protocol RadarDataSource: class {
     /**
      Number of objects in radar.
      
@@ -578,7 +595,7 @@ private class RadarPointView: UIButton {
     func objectForIndex(radar: RadarView, index : Int) -> RadarObjectProtocol
 }
 
-@objc public protocol RadarDelegate {
+public protocol RadarDelegate: class {
     /**
      Is called when user selects single object
      
@@ -586,7 +603,7 @@ private class RadarPointView: UIButton {
      @param index Index of object
      
      */
-    optional func didSelectObjectAtIndex(radar: RadarView, index : Int)
+    func didSelectObjectAtIndex(radar: RadarView, index : Int)
     
     /**
      Is called when user selects group of objects
@@ -595,43 +612,43 @@ private class RadarPointView: UIButton {
      @param indexes Array of indexes of objects which have been selected
      
      */
-    optional func didSelectGroupWithIndexes(radar: RadarView, indexes: [Int])
+    func didSelectGroupWithIndexes(radar: RadarView, indexes: [Int])
 }
 
-@objc public protocol RadarObjectProtocol {
+public protocol RadarObjectProtocol: AnyObject {
     /**
      Title for object in radar
      
      @return String title
      */
-    func title() -> String
+    func rv_title() -> String
     
     /**
      Title color for object in radar
      
      @return UIColor title
      */
-    func titleColor() -> UIColor?
+    func rv_titleColor() -> UIColor?
     
     /**
      UIImage for object in radar
      
      @return UIImage instance of photo
      */
-    func photo() -> UIImage
+    func rv_photo(button: UIButton)
     
     /**
      Identifier UIImage (identifies gender for example). Should be hidden if nil.
      
      @return optional UIImage instance of identifier image
      */
-    func identifierIcon() -> UIImage?
+    func rv_identifierIcon() -> UIImage?
     
     /**
      Distance from current location. For layout purposes.
      
      @return distance to object as CLLocationDistance
      */
-    func distance() -> CLLocationDistance
+    func rv_distanceFromCurrentPosition() -> CLLocationDistance
 }
 
