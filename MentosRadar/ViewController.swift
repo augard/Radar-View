@@ -10,51 +10,37 @@ import UIKit
 import CoreLocation
 
 
-@objc class ViewObject: NSObject, RadarObjectProtocol {
+class ViewObject: RadarObjectProtocol {
     private var vDistance: CLLocationDistance
     private var vTitle: String
     private var vPhoto: UIImage
     private var vIdentifierIcon: UIImage?
-    
-    override init() {
-        vDistance = CLLocationDistanceMax
-        vTitle = "Lorem Ipsum"
-        vPhoto = UIImage(named: "default-ico")!
-        
-        super.init()
-    }
     
     init(title: String, photo: UIImage, identifierIcon: UIImage?, distance: CLLocationDistance) {
         vTitle = title
         vPhoto = photo
         vIdentifierIcon = identifierIcon
         vDistance = distance
-
-        super.init()
     }
     
-    func title() -> String {
+    func rv_title() -> String {
         return vTitle
     }
     
-    func titleColor() -> UIColor? {
+    func rv_titleColor() -> UIColor? {
         return nil
     }
     
-    func photo() -> UIImage {
-        return vPhoto
+    func rv_photo(button: UIButton) {
+        button.setImage(vPhoto, forState: .Normal)
     }
     
-    func identifierIcon() -> UIImage? {
+    func rv_identifierIcon() -> UIImage? {
         return vIdentifierIcon
     }
     
-    func distance() -> CLLocationDistance {
+    func rv_distanceFromCurrentPosition() -> CLLocationDistance {
         return vDistance
-    }
-    
-    override var description: String {
-        return "\(self.dynamicType): \(vTitle), \(vDistance)\n"
     }
 }
 
@@ -83,7 +69,7 @@ class ViewController: UIViewController, UITabBarDelegate, RadarDataSource, Radar
         radarObjects.removeAll()
         
         let limit = Int.random(3, 25)
-        let distanceMax = Double.random(3500, 25000)
+        let distanceMax = Double.random(1500, 100)
         for _ in 0..<limit {
             let famale = Int.random(0, 1)
             let object = ViewObject(title: nameGeneator.getName(true, male: famale == 0, prefix: true, postfix: true).componentsSeparatedByString(" ").first!,
@@ -130,6 +116,16 @@ class ViewController: UIViewController, UITabBarDelegate, RadarDataSource, Radar
     
     func objectForIndex(radar: RadarView, index: Int) -> RadarObjectProtocol {
         return radarObjects[index]
+    }
+    
+    // MARK: - RadarDelegate
+    
+    func didSelectObjectAtIndex(radar: RadarView, index : Int) {
+         NSLog("didSelectObjectAtIndex \(index)")
+    }
+    
+    func didSelectGroupWithIndexes(radar: RadarView, indexes: [Int]) {
+        NSLog("didSelectGroupWithIndexes \(indexes)")
     }
     
     // MARK: - UITabBarDelegate
