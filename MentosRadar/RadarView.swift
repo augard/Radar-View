@@ -455,7 +455,7 @@ private class RadarPointView: UIButton {
                 view.objectIndex = objectIndex
                 view.object = object
                 if view.group {
-                    view.setTitle("+\(objects.count - maxPoints)", forState: .Normal)
+                    view.setTitle("+\(objects.count - maxPoints + 1)", forState: .Normal)
                 }
                 
                 var offsetX: CGFloat = marginX + ((marginX + pointSize) * line)
